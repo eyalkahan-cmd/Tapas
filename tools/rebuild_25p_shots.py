@@ -19,6 +19,9 @@ YS, CS = W * H, (W // 2) * (H // 2)
 FS = YS + 2 * CS
 # Only these stretches (seconds) are rebuilt; the logo card from 10.8 s stays as it was.
 RANGES = [(2.0, 3.8), (7.6, 10.8)]
+# Single-field flashes baked into the source (50p frame -> frame shown instead).
+# 397 (7.94 s): one over-bright field right at the plate cut.
+REPLACE = {397: 398}
 
 
 def frames(path):
@@ -85,7 +88,9 @@ enc = subprocess.Popen(
     stdin=subprocess.PIPE)
 
 rebuilt = []
-for i, (y, u, v) in enumerate(frames(BWDIF)):
+bw = list(frames(BWDIF))
+for i in range(len(bw)):
+    y, u, v = bw[REPLACE.get(i, i)]
     j = twin(i) if in_ranges(i) and i < n_fields else None
     if j is not None:
         ki, pi = field(i)

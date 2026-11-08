@@ -38,3 +38,19 @@ ffmpeg -i out/tapas-branded-50p.mp4 -vf "tinterlace=mode=interleave_top,setfield
   timebase (`s()`, `useF()`), the composition runs at 50 fps.
 - `src/elements.tsx`: reusable graphics (StripeDash, BandWipe, Star, Chili, CornerBrackets, Ring, Burst).
 - `src/TapasBranded.tsx`: one layer per shot over the video.
+
+## Deluxe version (richer motion graphics)
+A brand thread (yellow, red, fine white) travels through every shot as one continuous move, floating
+behind the people and in front of the set, with embers, stars, stripe bars, band wipes, speed streaks,
+an orbit under the croquetas, a reflection on the steel, and the card's bands gathering at the end.
+The logo card (from frame 546, 10.92 s) is passed through untouched. Code: `src/deluxe/`.
+```bash
+# 1. people cut-outs (once): venv with onnxruntime, opencv-python-headless, numpy + u2net_human_seg.onnx
+python tools/matte.py public/tapas-50p.mp4 u2net_human_seg.onnx public/people-matte.mkv
+# 2. graphics in two depth passes
+npx remotion render DeluxeBack out/deluxe/back --sequence --image-format=png --frames=0-545
+npx remotion render DeluxeFront out/deluxe/front --sequence --image-format=png --frames=0-545
+# 3. composite → out/tapas-deluxe-50p.mp4 and out/tapas-deluxe-1080i50-TFF.mp4
+tools/composite_deluxe.sh
+```
+`npx remotion studio` → `DeluxePreview` previews the graphics (without the cut-outs).

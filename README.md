@@ -30,3 +30,16 @@ ffmpeg -i out/tapas-branded-50p.mp4 -vf "tinterlace=mode=interleave_top,setfield
   timebase (`s()`, `useF()`), the composition runs at 50 fps.
 - `src/elements.tsx`: reusable graphics (StripeDash, BandWipe, Star, Chili, CornerBrackets, Ring, Burst).
 - `src/TapasBranded.tsx`: one layer per shot over the video.
+
+## ZUK shot: one-shot transition instead of the dissolve
+`ZukOneShot` (50 fps, 6.44 s) replaces the 2.8–3.44 s dissolve in `public/zuk.mp4` with one camera pull-back:
+scene A (plate on the counter) is slowed ~1.9x with motion interpolation to keep the length, then cuts on the
+plate to scene B, which starts scaled ~1.55x so its plate matches A's and keeps pulling back to full frame.
+```bash
+ffmpeg -i public/zuk.mp4 -vf "bwdif=mode=send_field:parity=tff:deint=all" -r 50 \
+  -c:v libx264 -crf 12 -preset slow -pix_fmt yuv420p -c:a copy public/zuk-50p.mp4
+ffmpeg -ss 2.0 -t 0.76 -i public/zuk-50p.mp4 -an \
+  -vf "setpts=(1.44/0.76)*PTS,minterpolate=fps=50:mi_mode=mci:mc_mode=aobmc:me_mode=bidir:vsbmc=1" \
+  -c:v libx264 -crf 12 -pix_fmt yuv420p public/zuk-a-slow.mp4
+npx remotion render ZukOneShot out/zuk-oneshot-50p.mp4
+```

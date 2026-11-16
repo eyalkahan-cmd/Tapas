@@ -4,8 +4,7 @@ import {clamp, LEAN, RED, s, snap, YELLOW} from './brand';
 import {Burst, Ring, Star} from './elements';
 
 // "Vid" edit (one-shot transition version), 50p. Same graphic language as the branded opening
-// (graphics-ref.mp4): rings on the croquetas (from 1.0 s), speed lines left of the plate (from 2.0 s), a burst at the bell,
-// and the leaning yellow/red bands gathering at the left edge before the logo reveal.
+// (graphics-ref.mp4): rings on the croquetas (from 1.0 s), speed lines left of the plate (from 2.0 s), and a burst at the bell.
 // Timing is written in seconds via s() (25-unit timebase), positions in 1920x1080 pixels.
 
 export const VID_FPS = 50;
@@ -76,23 +75,6 @@ const Bell: React.FC<{t: number}> = ({t}) => {
   return ding > 0 && ding < 1 ? <Burst cx={1374} cy={885} progress={ding} r0={40} r1={110} /> : null;
 };
 
-// Leaning bands gather at the left edge, then slide out as the logo appears in the cloche.
-const Bands: React.FC<{t: number}> = ({t}) => {
-  const gather = snap(t, s(5.5), 10);
-  const leave = interpolate(t, [s(6.22), s(6.44)], [0, 1], clamp);
-  const bands = [{c: YELLOW, w: 70, x: -10}, {c: RED, w: 46, x: 70}];
-  return (
-    <>
-      {bands.map((b, i) => (
-        <div key={i} style={{
-          ...abs, top: -60, height: 1200, width: b.w, borderRadius: 30, background: b.c,
-          left: b.x - (1 - gather) * 260 - leave * 320, transform: `skewX(${-LEAN}deg)`,
-        }} />
-      ))}
-    </>
-  );
-};
-
 export const VidBranded: React.FC = () => {
   const t = useCurrentFrame() / 2; // 25-unit time
   return (
@@ -102,7 +84,6 @@ export const VidBranded: React.FC = () => {
         {t >= s(0.98) && t < s(2.25) && <Croquetas t={t} />}
         {t >= s(1.98) && t < s(2.85) && <SpeedLines t={t} />}
         {t >= s(5.2) && t < s(5.7) && <Bell t={t} />}
-        {t >= s(5.48) && t < s(6.5) && <Bands t={t} />}
       </AbsoluteFill>
     </AbsoluteFill>
   );

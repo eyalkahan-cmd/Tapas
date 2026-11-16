@@ -43,3 +43,12 @@ ffmpeg -ss 2.0 -t 0.76 -i public/zuk-50p.mp4 -an \
   -c:v libx264 -crf 12 -pix_fmt yuv420p public/zuk-a-slow.mp4
 npx remotion render ZukOneShot out/zuk-oneshot-50p.mp4
 ```
+
+## Vid edit: branded
+`VidBranded` (50 fps, 7.8 s) adds the opening's graphics to `public/vid.mp4` (deinterlaced to `public/vid-50p.mp4`,
+same bwdif command as above): rings on the croquetas (1.4–2.2 s), speed lines by the plate in the camera move
+(2.4–2.8 s), a burst at the bell (5.24 s) and the leaning bands at the left edge before the logo (5.74–6.44 s).
+`public/graphics-ref.mp4` is the reference the owner supplied.
+```bash
+npx remotion render VidBranded out/vid-branded-50p.mp4
+```
